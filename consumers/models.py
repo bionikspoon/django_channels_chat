@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class ChatMessage(models.Model):
+    room = models.CharField(max_length=64)
+    message = models.CharField(max_length=1024)

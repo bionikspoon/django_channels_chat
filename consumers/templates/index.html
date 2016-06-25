@@ -33,7 +33,7 @@
    <script>
       $(() => {
          const SESSION_KEY = '{{ request.session.session_key }}';
-         const socket = new WebSocket(`ws://${window.location.host}/chat/hotel_6/?session_key=${SESSION_KEY}`);
+         const socket = new WebSocket(`ws://${window.location.host}/hotel_6/?session_key=${SESSION_KEY}`);
          const $chat = $('#chat');
          const $send = $('#send');
          const $message = $('#message');
