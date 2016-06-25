@@ -23,11 +23,11 @@
    <div id="chat" class="well well-lg" style="display: none">
 
    </div>
-   <form>
+   <form onsubmit="return false">
       <div class="input-group">
          <input title='message' type="text" name="message" id="message" class="form-control">
          <span class="input-group-btn">
-            <button id='send' class="btn btn-default">
+            <button id='send' class="btn btn-default" type="submit">
                <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Send
             </button>
          </span>
@@ -42,7 +42,8 @@
         crossorigin="anonymous"></script>
 <script>
    $(() => {
-      const socket = new WebSocket(`ws://${window.location.host}/chat/`);
+      const SESSION_KEY = '{{ request.session.session_key }}';
+      const socket = new WebSocket(`ws://${window.location.host}/?session_key=${SESSION_KEY}`);
       const $chat = $('#chat');
       const $send = $('#send');
       const $message = $('#message');
@@ -51,12 +52,12 @@
          event.preventDefault();
          if(!$message.val()) return;
 
-         $chat.show();
          socket.send($message.val());
          $message.val('');
       });
 
       socket.onmessage = event => {
+         $chat.show();
          $chat.append(`<p class=chat-message>${event.data}</p>`)
       }
    });
