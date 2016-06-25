@@ -4,17 +4,25 @@ from channels.auth import channel_session_user_from_http, channel_session_user
 
 
 @channel_session_user_from_http
-def ws_connect(message):
-    Group('chat-%s' % message.user.username[0]).add(message.reply_channel)
+def chat_connect(message, room):
+    group = Group('chat-%s' % room)
+    group.add(message.reply_channel)
+    group.send({
+        'text': '[%s] connected' % message.user.username,
+    })
 
 
 @channel_session_user
-def ws_message(message):
-    Group('chat-%s' % message.user.username[0]).send({
+def chat_message(message, room):
+    Group('chat-%s' % room).send({
         'text': '[%s] %s' % (message.user.username, message.content['text']),
     })
 
 
 @channel_session_user
-def ws_disconnect(message):
-    Group('chat-%s' % message.user.username[0]).discard(message.reply_channel)
+def chat_disconnect(message, room):
+    group = Group('chat-%s' % room)
+    group.discard(message.reply_channel)
+    group.send({
+        'text': '[%s] disconnected' % message.user.username,
+    })
