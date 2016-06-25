@@ -4,11 +4,11 @@ from channels.routing import include
 
 chat_routing = [
     route('websocket.connect',
-          'consumers.consumers.msg_connect'),
+          'chat.consumers.msg_connect'),
     route('websocket.receive',
-          'consumers.consumers.msg_message'),
+          'chat.consumers.msg_message'),
     route('websocket.disconnect',
-          'consumers.consumers.msg_disconnect'),
+          'chat.consumers.msg_disconnect'),
 
 
 ]
@@ -16,5 +16,5 @@ chat_routing = [
 routing = [
     include(chat_routing, path=r'^/'),
     route('chat-messages',
-          'consumers.consumers.msg_consumer'),
+          'chat.consumers.msg_consumer'),
 ]
