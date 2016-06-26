@@ -1,46 +1,46 @@
 # coding=utf-8
+import json
+
 from channels import Group, Channel
 from channels.auth import channel_session_user_from_http, channel_session_user
-from channels.sessions import channel_session
 
 from .models import ChatMessage
 
 
-def msg_consumer(message):
+def chat_consumer(message):
     room = message.content['room']
-    print('msg_consumer', 'room', room)
-
-    message = message.content['message']
+    text = message.content['message']
+    username = message.content['username']
     ChatMessage.objects.create(room=room, message=message)
 
+    data = json.dumps({'message': text, 'username': username})
+
     group = Group('chat-%s' % room)
-    group.send({'text': message})
+    group.send({'text': data})
 
 
-@channel_session
-def msg_connect(message):
+@channel_session_user_from_http
+def chat_connect(message):
     room = message.content['path'].strip('/')
-    print('msg_connect', 'room', room)
     message.channel_session['room'] = room
 
     group = Group('chat-%s' % room)
     group.add(message.reply_channel)
 
 
-@channel_session
-def msg_message(message):
+@channel_session_user
+def chat_message(message):
     room = message.channel_session['room']
-    print('msg_message', 'room', room)
     Channel('chat-messages').send({
         'room': room,
-        'message': message['text']
+        'message': message['text'],
+        'username': message.user.username,
     })
 
 
-@channel_session
-def msg_disconnect(message):
+@channel_session_user
+def chat_disconnect(message):
     room = message.channel_session['room']
-    print('msg_disconnect', 'room', room)
 
     group = Group('chat-%s' % room)
     group.discard(message.reply_channel)

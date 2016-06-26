@@ -47,8 +47,9 @@
          });
 
          socket.onmessage = event => {
+            const data = JSON.parse(event.data);
             $chat.show();
-            $chat.append(`<p class=chat-message>${event.data}</p>`)
+            $chat.append(`<p class='chat-message'><span class="username">[${data.username}]</span> ${data.message}</p>`)
          }
       });
    </script>
